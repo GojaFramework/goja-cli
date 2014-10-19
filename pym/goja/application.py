@@ -1,10 +1,14 @@
 # coding=utf-8
+# -*- coding: utf-8 -*-
+#
+# Copyright 2014 by yfyang. All Rights Reserved.
 import os
 import sys
 import uuid
 import shutil
 
-from japp.utils import underline_to_camel, storage_file, copy_directory, read_conf
+from goja.utils import underline_to_camel, storage_file
+from goja.utils import copy_directory, read_conf
 from jinja2 import Environment, FileSystemLoader
 
 
@@ -12,7 +16,9 @@ __author__ = 'yfyang'
 
 
 class Application():
-    """"""
+    """
+        Goja Framework Application
+    """
 
     def __init__(self, cmd_path, japp_path, application_name):
         """Constructor for Pom"""
@@ -24,13 +30,17 @@ class Application():
         else:
             self.app_dir = self.cmd_path
 
+    def upgrade(self):
+        pass
+
     def layout(self):
         misc_path = os.path.join(self.cmd_path, self.application_name, 'misc')
         os.makedirs(misc_path)
         # Maven layout project.
         _src = os.path.join(self.cmd_path, self.application_name, 'src')
         if os.path.exists(_src):
-            print 'the %s is exist!' % os.path.join(self.cmd_path, self.application_name)
+            print 'the %s is exist!' % os.path.join(self.cmd_path,
+                                                    self.application_name)
             sys.exit(1)
         os.makedirs(_src)
         main_ = os.path.join(_src, 'main')
@@ -68,10 +78,12 @@ class Application():
     def sync_lib(self):
         storage_path = os.path.join(
             self.app_dir, 'src', 'main', 'webapp', 'WEB-INF', 'lib')
-        copy_directory(os.path.join(self.japp_path, 'deps', 'compile'), storage_path)
+        copy_directory(os.path.join(self.japp_path, 'deps', 'compile'),
+                       storage_path)
 
         storage_path = os.path.join(self.app_dir, 'src', 'test', 'lib')
-        copy_directory(os.path.join(self.japp_path, 'deps', 'test'), storage_path)
+        copy_directory(os.path.join(self.japp_path, 'deps', 'test'),
+                       storage_path)
 
     def conf(self):
         storage_path = os.path.join(self.app_dir, 'src', 'main', 'resources')
@@ -91,7 +103,8 @@ class Application():
 
     def code(self):
         # .gitignore copy
-        ignore_git = open(os.path.join(self.japp_path, 'deps', 'git', 'ignore'), 'r')
+        ignore_git = open(os.path.join(self.japp_path,
+                                       'deps', 'git', 'ignore'), 'r')
         storage_file(self.app_dir, ignore_git.read(), '.gitignore')
         ignore_git.close()
 
@@ -120,7 +133,8 @@ class Application():
         import subprocess
 
         # 1. render build.xml file into project dir.
-        war_params = {'appName': self.application_name, 'genPath': self.japp_path}
+        war_params = {'appName': self.application_name,
+                      'genPath': self.japp_path}
         build_xml_content = self.__code_tpl__('ci/build.xml', war_params)
         build_xml_file = os.path.join(self.app_dir, 'build.xml')
         storage_file(self.app_dir, build_xml_content, 'build.xml')
@@ -128,7 +142,8 @@ class Application():
         # 2. call ant run subprocess.
         ant_path = os.path.join(self.japp_path, 'ci', 'ant', 'bin', 'ant')
         ant_cmds = '%s clean package' % ant_path
-        compile_process = subprocess.Popen(ant_cmds, shell=True, stdout=subprocess.PIPE)
+        compile_process = subprocess.Popen(ant_cmds, shell=True,
+                                           stdout=subprocess.PIPE)
         while compile_process.poll() is None:
             print compile_process.stdout.readline()
         # 3. clean build file.
@@ -149,20 +164,20 @@ class Application():
         """
         conf = read_conf(self.app_dir)
         if 'db.url' not in conf:
-            print 'This Application is not enable database or not mysql database.'
+            print 'The Application not enable database or not mysql database.'
             sys.exit()
         db_url = conf['db.url']
         host_index = db_url.find(':', 12)
         host = db_url[13:host_index]
         port_idx = db_url.find('/', host_index)
-        port = db_url[host_index + 1: port_idx]
-        db = db_url[port_idx + 1: db_url.find('?', port_idx)]
+        # port = db_url[host_index + 1: port_idx]
+        db_name = db_url[port_idx + 1: db_url.find('?', port_idx)]
 
         db_user = conf['db.username']
         db_pwd = conf['db.password']
         import MySQLdb
 
-        db = MySQLdb.connect(host, db_user, db_pwd, db)
+        db = MySQLdb.connect(host, db_user, db_pwd, db_name)
         cursor = db.cursor()
         sql = 'show tables'
 
@@ -175,7 +190,8 @@ class Application():
                 # table name like ol_member_type
                 real_table_name = row[0]
                 row__find = real_table_name.find('_')
-                table_name = 'tmp_' + real_table_name[row__find + 1: len(real_table_name)]
+                _rtn = real_table_name[row__find + 1: len(real_table_name)]
+                table_name = 'tmp_%s' % _rtn
                 # find table column name
                 cursor.execute(
                     "select column_name from information_schema.columns where table_name='%s'" % real_table_name)
@@ -194,26 +210,30 @@ class Application():
             db.close()
 
         model_dir = os.path.join(self.app_dir, 'src', 'main', 'java', 'app', 'models')
-        sql_conf_dir = os.path.join(self.app_dir, 'src', 'main', 'resources', 'sqlcnf')
+        scd = os.path.join(self.app_dir, 'src', 'main', 'resources', 'sqlcnf')
         for _m in models:
-            model_ = _m['model']
-            model__lower = model_.lower()
-            params = {'tableName': _m['table'], 'model': model_, 'lower_model': model__lower}
+            _tm = _m['model']
+            _lm = _tm.lower()
+            params = {'tableName': _m['table'], 'model': _tm, 'lower_model': _lm}
             file_content = self.__code_tpl__('code/model.java', params)
-            if not os.path.exists(os.path.join(model_dir, model_ + '.java')):
-                storage_file(model_dir, file_content, model_ + ".java")
+            if not os.path.exists(os.path.join(model_dir, _tm + '.java')):
+                storage_file(model_dir, file_content, _tm + ".java")
 
-            sql_params = {'model': model__lower, 'columns': _m['columns'], 'tableName': _m['table']}
+            sql_params = {'model': _lm, 'columns': _m['columns'], 'tableName': _m['table']}
             sql_conf_content = self.__code_tpl__('code/sql.xml', sql_params)
-            if not os.path.exists(os.path.join(sql_conf_dir, model__lower + '-sql.xml')):
-                storage_file(sql_conf_dir, sql_conf_content, model__lower + '-sql.xml')
+            if not os.path.exists(os.path.join(scd, _lm + '-sql.xml')):
+                storage_file(scd, sql_conf_content, _lm + '-sql.xml')
         print 'sync db to model Success!'
 
     def idea(self):
         idea_ipr = self.application_name + '.ipr'
         idea_iws = self.application_name + '.iws'
         idea_iml = self.application_name + '.iml'
-        params = {'appName': self.application_name, 'appSN': uuid.uuid4(), 'gen_path': self.japp_path}
+        params = {
+                   'appName': self.application_name,
+                   'appSN': uuid.uuid4(),
+                   'gen_path': self.japp_path
+                }
         file_content = self.__code_tpl__('idea/app.module', params)
         storage_file(self.app_dir, file_content, idea_iml)
         file_content = self.__code_tpl__('idea/app.project', params)

@@ -17,21 +17,22 @@ gen_path = os.path.normpath(os.path.dirname(os.path.realpath(sys.argv[0])))
 sys.path.append(os.path.join(gen_path, 'pym'))
 
 
-from japp.application import Application
-from japp.utils import read_conf
+from goja.application import Application
+from goja.utils import read_conf
 
 
 def usage():
     print "~ "
-    print "~ JFinal App gen."
-    print "~ Usage: japp cmd application_name [-options]"
+    print "~ Gaja App gen."
+    print "~ Usage: goja cmd application_name [-options]"
     print "~"
     print '~ with, new          Create a new application'
     print '~       war          Export the application as a standalone WAR archive'
     print '~       syncdb       Sync Database table to Jfinal Model'
     print '~       idea         Convert the project to Intellij IDEA project'
-    print '~       pom          Generate Maven POM file, and comply with the standard configuration Jfinal-app'
-    print '~       help         Show japp help'
+    print '~       pom          Generate Maven POM file, and comply with the standard configuration Goja-app'
+    print '~       upgrade      Upgrade Code'
+    print '~       help         Show goja help'
     print '~'
 
 
@@ -91,6 +92,10 @@ if __name__ == "__main__":
 
     if cmd == 'idea':
         app.idea()
+        sys.exit()
+
+    if cmd == 'upgrade':
+        app.upgrade()
         sys.exit()
 
     if cmd == 'help':
