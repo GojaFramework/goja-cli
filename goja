@@ -14,8 +14,7 @@ sys.setdefaultencoding('utf-8')
 
 gen_path = os.path.normpath(os.path.dirname(os.path.realpath(sys.argv[0])))
 
-sys.path.append(os.path.join(gen_path, 'pym'))
-
+sys.path.append(os.path.join(gen_path, 'framework', 'pym'))
 
 from goja.application import Application
 from goja.utils import read_conf
@@ -31,7 +30,7 @@ def usage():
     print '~       syncdb       Sync Database table to Jfinal Model'
     print '~       idea         Convert the project to Intellij IDEA project'
     print '~       pom          Generate Maven POM file, and comply with the standard configuration Goja-app'
-    print '~       upgrade      Upgrade Code'
+    print '~       upgrade      Upgrade Code To Goja.'
     print '~       help         Show goja help'
     print '~'
 
