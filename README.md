@@ -1,8 +1,8 @@
-# JFinal `japp` Commend line tool
+# `Goja-cli` Commend line tool
 
 ## Usage
 
-set `JAPP_HOME` with into you path.
+set `GOJA_HOME` with into you path.
 
 example, japp unzip to `~/Workthing/02_sogyf/jfinal-gap/japp`:
     
@@ -12,8 +12,8 @@ example, japp unzip to `~/Workthing/02_sogyf/jfinal-gap/japp`:
 then run
 
     ~
-    ~ JFinal App gen.
-    ~ Usage: jfgen cmd application_name [-options]
+    ~ Gaja Web Application gen.
+    ~ Usage: goja cmd application_name [-options]
     ~
     ~ with, new          Create a new application
     ~       war          Export the application as a standalone WAR archive
@@ -62,15 +62,15 @@ then run
 
 		20 directories, 6 files
 
-2. If you use Maven to develop, the executable `japp pom` command will project into standard Maven project, and then use your custom IDE open the Maven project will be.
+2. If you use Maven to develop, the executable `goja pom` command will project into standard Maven project, and then use your custom IDE open the Maven project will be.
 		
 		$ cd towork
-		$ japp pom
+		$ goja pom
 		generate maven pom file Success!
 		
-3.  Or you can use the `japp idea` to generate idea project file.
+3.  Or you can use the `goja idea` to generate idea project file.
 		
 		$ cd towork
-		$ japp idea
+		$ goja idea
 		
 4. Next, you can enjoy the use of idea for the developement of.

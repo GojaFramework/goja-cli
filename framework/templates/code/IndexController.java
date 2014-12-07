@@ -1,6 +1,6 @@
 package app.controllers;
 
-import com.github.sog.controller.BasicController;
+import goja.mvc.Controller;
 import com.jfinal.core.ActionKey;
 
 /**
@@ -8,7 +8,7 @@ import com.jfinal.core.ActionKey;
  * Default index Controller.
  * </p>
  */
-public class IndexController extends BasicController {
+public class IndexController extends Controller {
 
     @ActionKey("/")
     public void index(){

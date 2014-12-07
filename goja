@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # coding=utf-8
 #
-# Copyright 2014 by yfyang. All Rights Reserved.
+# Copyright 2014 by sogyf. All Rights Reserved.
 import os
 import getopt
 import os.path
@@ -12,9 +12,9 @@ reload(sys)
 # 解决：中文字符写入文件问题
 sys.setdefaultencoding('utf-8')
 
-gen_path = os.path.normpath(os.path.dirname(os.path.realpath(sys.argv[0])))
+goja_home = os.path.normpath(os.path.dirname(os.path.realpath(sys.argv[0])))
 
-sys.path.append(os.path.join(gen_path, 'framework', 'pym'))
+sys.path.append(os.path.join(goja_home, 'framework', 'pym'))
 
 from goja.application import Application
 from goja.utils import read_conf
@@ -22,7 +22,7 @@ from goja.utils import read_conf
 
 def usage():
     print "~ "
-    print "~ Gaja App gen."
+    print "~ Gaja Web Application gen."
     print "~ Usage: goja cmd application_name [-options]"
     print "~"
     print '~ with, new          Create a new application'
@@ -30,7 +30,6 @@ def usage():
     print '~       syncdb       Sync Database table to Jfinal Model'
     print '~       idea         Convert the project to Intellij IDEA project'
     print '~       pom          Generate Maven POM file, and comply with the standard configuration Goja-app'
-    print '~       upgrade      Upgrade Code To Goja.'
     print '~       help         Show goja help'
     print '~'
 
@@ -62,7 +61,7 @@ if __name__ == "__main__":
         conf = read_conf(cmd_path)
         app_name = conf['app']
 
-    app = Application(cmd_path, gen_path, app_name)
+    app = Application(cmd_path, goja_home, app_name)
 
     if cmd == 'new':
         if app_name is None:

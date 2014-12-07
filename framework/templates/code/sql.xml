@@ -6,7 +6,6 @@
   -->
 
 <sqlGroup name="{{model}}">
-    <sql id="list">
-       SELECT {{columns}} FROM {{tableName}}
+    <sql id="">
     </sql>
 </sqlGroup>

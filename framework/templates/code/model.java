@@ -6,8 +6,8 @@
 
 package app.models;
 
-import com.github.sog.annotation.TableBind;
-import com.github.sog.plugin.sqlinxml.SqlKit;
+import goja.annotation.TableBind;
+import goja.plugins.sqlinxml.SqlKit;
 import com.jfinal.plugin.activerecord.Model;
 
 import java.util.List;
@@ -20,14 +20,10 @@ import java.util.List;
 @TableBind(tableName = "{{tableName}}")
 public class {{model}} extends Model<{{model}}> {
 
-    private static final long   serialVersionUID = 1L;
     /**
      * The public dao.
      */
     public static final {{model}} dao = new {{model}}();
 
 
-    public List<{{model}}> list(){
-    	return find(SqlKit.sql("{{lower_model}}.list"));
-    }
 }
