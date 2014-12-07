@@ -189,7 +189,7 @@ class Application():
             db.close()
 
         model_dir = os.path.join(self.app_dir, 'src', 'main', 'java', 'app', 'models')
-        scd = os.path.join(self.app_dir, 'src', 'main', 'resources', 'sqlcnf')
+        scd = os.path.join(self.app_dir, 'src', 'main', 'resources', 'sqlconf')
         for _m in models:
             _tm = _m['model']
             _lm = _tm.lower()
@@ -246,7 +246,7 @@ class Application():
             │   │   └── app
             │   ├── resources
             │   │   ├── application.conf
-            │   │   └── sqlcnf
+            │   │   └── sqlconf
             │   └── webapp
             │       ├── WEB-INF
             │       └── static
@@ -274,7 +274,7 @@ class Application():
 
         resources_ = os.path.join(main_, 'resources')
         os.mkdir(resources_)
-        os.mkdir(os.path.join(resources_, 'sqlcnf'))
+        os.mkdir(os.path.join(resources_, 'sqlconf'))
 
         webapp_ = os.path.join(main_, 'webapp')
         os.mkdir(webapp_)
