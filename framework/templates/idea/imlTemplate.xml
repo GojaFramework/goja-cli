@@ -32,34 +32,34 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="{{goja_home}}/resources/libs" />
+          <root url="file://{{goja_home}}/resources/libs" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="{{goja_home}}/resources/libs" />
+          <root url="file://{{goja_home}}/resources/libs" />
         </SOURCES>
-        <jarDirectory url="{{goja_home}}/resources/libs" recursive="false" />
-        <jarDirectory url="{{goja_home}}/resources/libs" recursive="false" type="SOURCES" />
+        <jarDirectory url="file://{{goja_home}}/resources/libs" recursive="false" />
+        <jarDirectory url="file://{{goja_home}}/resources/libs" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="{{goja_home}}/resources/libs-test" />
+          <root url="file://{{goja_home}}/resources/libs-test" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="{{goja_home}}/resources/libs-test" recursive="false" />
+        <jarDirectory url="file://{{goja_home}}/resources/libs-test" recursive="false" />
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="PROVIDED">
       <library>
         <CLASSES>
-          <root url="{{goja_home}}/resources/libs-provided" />
+          <root url="file://{{goja_home}}/resources/libs-provided" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="{{goja_home}}/resources/libs-provided" recursive="false" />
+        <jarDirectory url="file://{{goja_home}}/resources/libs-provided" recursive="false" />
       </library>
     </orderEntry>
   </component>

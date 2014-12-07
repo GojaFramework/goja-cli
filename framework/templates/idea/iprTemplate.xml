@@ -60,6 +60,7 @@
             <element id="file-copy" path="{{goja_home}}/resources/libs/poi-ooxml-schemas-3.10.1.jar" />
             <element id="file-copy" path="{{goja_home}}/resources/libs/commons-collections-3.2.1.jar" />
             <element id="file-copy" path="{{goja_home}}/resources/libs/mysql-connector-java-5.1.34.jar" />
+            <element id="file-copy" path="{{goja_home}}/resources/libs/org.eclipse.jdt.core-3.8.2.v20130121.jar" />
           </element>
         </element>
         <element id="javaee-facet-resources" facet="{{appName}}/web/Web" />
