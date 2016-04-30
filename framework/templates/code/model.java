@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013-2014 jfinal app. jfapp Group.
+ * Copyright (c) 2013-2015 Goja By Mo008.com.
  */
 
 package app.models;

@@ -9,11 +9,10 @@ from goja.utils import underline_to_camel, storage_file
 from goja.utils import copy_directory, read_conf
 from jinja2 import Environment, FileSystemLoader
 
-
 __author__ = 'sogyf'
 
 
-class Application():
+class Application:
     """
         Goja Framework Application
     """
@@ -39,35 +38,17 @@ class Application():
             self.app_dir = os.path.join(self.cmd_path, self.application_name)
         else:
             self.app_dir = self.cmd_path
-
-    def upgrade(self):
-        """
-            将现有代码进行升级，主要包括：
-            controllers:
-                ⋿ import com.jfinal.config.BasicController; -> import goja.mvc.Controller;
-                ⋿ extends BasicController ->  extends Controller
-                ⋿ renderTpl( ->  template(
-
-            models:
-                ⋿ import com.jfinal.ext.plugin.sqlinxml.SqlKit; -> import goja.plugins.sqlinxml.SqlKit;
-                ⋿ import com.jfinal.ext.plugin.tablebind.TableBind; -> import goja.annotation.TableBind;
-
-            commons:
-                ⋿ import com.jfinal.log.Logger; -> import goja.Logger;
-                ⋿ import com.jfinal.config.AjaxMessage; -> import goja.mvc.AjaxMessage;
-                ⋿ logger.error -> Logger.error
-                ⋿ AppConfig.getDomain() -> Goja.domain
-                ⋿ import com.jfinal.initalizer.AppConfig; -> import goja.Goja;
-                +
-        """
-        pass
+        if not os.path.exists(self.app_dir):
+            print '应用目录 ' + self.app_dir + ' 不存在,无法执行命令'
+            sys.exit(1)
 
     def layout(self):
         self.mk_java_dir()
         self.mk_misc_dir()
 
     def sync_lib(self):
-        storage_path = os.path.join(self.app_dir, 'src', 'main', 'webapp', 'WEB-INF', 'lib')
+        storage_path = os.path.join(self.app_dir, 'src', 'main'
+                                    , 'webapp', 'WEB-INF', 'lib')
         copy_directory(os.path.join(self.goja_home, 'resources', 'libs'), storage_path)
 
         storage_path = os.path.join(self.app_dir, 'src', 'test', 'lib')
@@ -134,7 +115,7 @@ class Application():
         :return: 读取项目名称
         """
         conf = read_conf(self.app_dir)
-        return conf['app']
+        return conf['app.name']
 
     def syncdb(self):
         """

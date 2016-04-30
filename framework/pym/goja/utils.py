@@ -60,6 +60,7 @@ def read_conf(app_dir):
 def underline_to_camel(s_name):
     """
         下划线命名格式驼峰命名格式
+        :param s_name:
     """
     return re.sub(r'(?!^)_([a-zA-Z])', lambda m: m.group(1).upper(), s_name)
 

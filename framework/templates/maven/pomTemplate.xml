@@ -9,20 +9,32 @@
     <name>{{group}} :: Application</name>
     <url>http://{{group}}.github.io</url>
     <properties>
-        <goja.version>0.1.2</goja.version>
+        <goja.version>0.1.13</goja.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>com.github.sogyf</groupId>
-            <artifactId>goja-mvt</artifactId>
+            <artifactId>goja-boot</artifactId>
             <version>${goja.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.sogyf</groupId>
-            <artifactId>goja-test</artifactId>
+            <artifactId>goja-rapid</artifactId>
             <version>${goja.version}</version>
-            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>kisso</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        <!--
+        <dependency>
+            <groupId>com.github.sogyf</groupId>
+            <artifactId>goja-wxchat</artifactId>
+            <version>${goja.version}</version>
+        </dependency>
+        -->
 
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -31,13 +43,26 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.sogyf</groupId>
+            <artifactId>goja-test</artifactId>
+            <version>${goja.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <repositories>
         <repository>
-            <id>osc</id>
-            <name>osc Repository</name>
-            <url>http://maven.oschina.net/content/groups/public/</url>
+            <id>mobiao</id>
+            <name>mobiao Coding Maveen Repository</name>
+            <url>http://mobiao008.coding.me/repos</url>
         </repository>
     </repositories>
     <build>
@@ -64,7 +89,7 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.6</version>
             </plugin>
-            
+
             <!-- war打包插件, 设定war包名称不带版本号以及忽略web.xml文件 -->
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
@@ -72,16 +97,6 @@
                 <configuration>
                     <warName>${project.artifactId}</warName>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
-            
-            <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.0</version>
-                <configuration>
-                    <path>/</path>
-                    <port>8080</port>
                 </configuration>
             </plugin>
 
@@ -93,6 +108,17 @@
                     <source>1.6</source>
                     <target>1.6</target>
                     <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+              <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <path>/{{group}}</path>
+                    <port>8888</port>
+                    <uriEncoding>UTF-8</uriEncoding>
                 </configuration>
             </plugin>
         </plugins>

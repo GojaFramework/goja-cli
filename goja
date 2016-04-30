@@ -59,7 +59,7 @@ if __name__ == "__main__":
         app_name = sys.argv[2]
     else:
         conf = read_conf(cmd_path)
-        app_name = conf['app']
+        app_name = conf['app.name']
 
     app = Application(cmd_path, goja_home, app_name)
 
