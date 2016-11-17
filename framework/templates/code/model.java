@@ -1,14 +1,15 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013-2015 Goja By Mo008.com.
+ * Copyright (c) 2013-2016 Goja By Sogyf.
  */
 
-package app.models;
+package {{pkg}};
 
-import goja.annotation.TableBind;
-import goja.plugins.sqlinxml.SqlKit;
-import com.jfinal.plugin.activerecord.Model;
+import app.models.base.Base{{model}};
+
+import goja.core.annotation.TableBind;
+import goja.core.sqlinxml.SqlKit;
 
 import java.util.List;
 
@@ -16,9 +17,12 @@ import java.util.List;
  * <p>
  * The table {{tableName}} mapping model.
  * </p>
+ * @author {{sysUser}}
+ * @version 1.0
+ * @since JDK 1.6
  */
 @TableBind(tableName = "{{tableName}}")
-public class {{model}} extends Model<{{model}}> {
+public class {{model}} extends Base{{model}}<{{model}}> {
 
     /**
      * The public dao.

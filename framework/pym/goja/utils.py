@@ -12,6 +12,8 @@ __author__ = 'yfyang'
 
 
 def storage_file(storage_path, content, file_name):
+    if not os.path.exists(storage_path): 
+        os.makedirs(storage_path)
     output = open(storage_path + os.sep + file_name, 'wb')
     output.write(content)
     output.close()
@@ -56,6 +58,8 @@ def read_conf(app_dir):
 
     return config
 
+def upper_first(x):
+    return x[0].upper() + x[1:]
 
 def underline_to_camel(s_name):
     """

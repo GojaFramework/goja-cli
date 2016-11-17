@@ -5,7 +5,7 @@
 import os
 import sys
 
-from goja.utils import underline_to_camel, storage_file
+from goja.utils import underline_to_camel, storage_file, upper_first
 from goja.utils import copy_directory, read_conf
 from jinja2 import Environment, FileSystemLoader
 
@@ -33,22 +33,22 @@ class Application:
         """
         self.cmd_path = cmd_path
         self.goja_home = goja_home
+
         self.application_name = application_name
         if not cmd_path.endswith(application_name):
             self.app_dir = os.path.join(self.cmd_path, self.application_name)
         else:
             self.app_dir = self.cmd_path
-        if not os.path.exists(self.app_dir):
-            print '应用目录 ' + self.app_dir + ' 不存在,无法执行命令'
-            sys.exit(1)
+        # if not os.path.exists(self.app_dir):
+        #     print '应用目录 ' + self.app_dir + ' 不存在,无法执行命令'
+        #     sys.exit(1)
 
     def layout(self):
         self.mk_java_dir()
         self.mk_misc_dir()
 
     def sync_lib(self):
-        storage_path = os.path.join(self.app_dir, 'src', 'main'
-                                    , 'webapp', 'WEB-INF', 'lib')
+        storage_path = os.path.join(self.app_dir, 'src', 'main' , 'webapp', 'WEB-INF', 'lib')
         copy_directory(os.path.join(self.goja_home, 'resources', 'libs'), storage_path)
 
         storage_path = os.path.join(self.app_dir, 'src', 'test', 'lib')
@@ -126,6 +126,18 @@ class Application:
         if 'db.url' not in conf:
             print 'The Application not enable database or not mysql database.'
             sys.exit()
+        # 读取生成规则
+        generate_model = 'app.models'
+        if 'generate.model' in conf:
+            generate_model = conf['generate.model']
+        generate_base_model = generate_model + '.base'
+        if 'generate.model.base' in conf:
+            generate_base_model = conf['generate.model.base']
+
+        model_path = generate_model.split('.')
+        base_model_path = generate_base_model.split('.')
+
+        # 解析数据库配置
         db_url = conf['db.url']
         host_index = db_url.find(':', 12)
         host = db_url[13:host_index]
@@ -135,7 +147,10 @@ class Application:
 
         db_user = conf['db.username']
         db_pwd = conf['db.password']
+
+        # 读取数据库信息
         import MySQLdb
+        import getpass
 
         db = MySQLdb.connect(host, db_user, db_pwd, db_name)
         cursor = db.cursor()
@@ -154,30 +169,68 @@ class Application:
                 table_name = 'tmp_%s' % _rtn
                 # find table column name
                 cursor.execute(
-                    "select column_name from information_schema.columns where table_name='%s'" % real_table_name)
+                    "select column_name,data_type from information_schema.columns where table_name='%s'" % real_table_name)
                 columns = cursor.fetchall()
                 column_list = []
+                column_models = []
                 for column in columns:
                     column_list.append(column[0])
+                    field_var = underline_to_camel(column[0])
+                    column_models.append({
+                        'name': column[0], 
+                        'fieldName': upper_first(field_var),
+                        'fieldvar': field_var, 
+                        'data_type': column[1]
+                    })
 
-                models.append({'model': underline_to_camel(table_name).replace('tmp', ''), 'table': real_table_name,
-                               'columns': ','.join(column_list)})
+                models.append({
+                    'model': underline_to_camel(table_name).replace('tmp', ''),
+                    'table': real_table_name,
+                    'columns': ','.join(column_list),
+                    'column_models': column_models
+                })
 
             cursor.close()
         except:
+            import traceback
+            traceback.print_exc()
             print "error unkown tables;"
         finally:
             db.close()
 
-        model_dir = os.path.join(self.app_dir, 'src', 'main', 'java', 'app', 'models')
+        src_java_dir = os.path.join(self.app_dir, 'src','main', 'java');
+        model_dir = os.path.join(src_java_dir, *model_path)
+        base_model_dir = os.path.join(src_java_dir, *base_model_path)
+        # 打印目录
+        print 'generate db model in [%s]' % base_model_dir
+        print 'generate db base model in [%s]' % model_dir
         scd = os.path.join(self.app_dir, 'src', 'main', 'resources', 'sqlconf')
+        sys_user = getpass.getuser()
+
         for _m in models:
             _tm = _m['model']
             _lm = _tm.lower()
-            params = {'tableName': _m['table'], 'model': _tm, 'lower_model': _lm}
+            params = {
+                'tableName': _m['table'], 
+                'model': _tm, 
+                'lower_model': _lm, 
+                'sysUser': sys_user,
+                'pkg': generate_base_model
+            }
             file_content = self.__code_tpl__('code/model.java', params)
             if not os.path.exists(os.path.join(model_dir, _tm + '.java')):
                 storage_file(model_dir, file_content, _tm + ".java")
+
+            base_model_params = {
+                'tableName': _m['table'], 
+                'model': _tm, 
+                'sysUser': sys_user, 
+                'columns': _m['column_models'], 
+                'pkg': generate_base_model
+            }
+            base_model_content = self.__code_tpl__('code/basemodel.java', base_model_params)
+            if not os.path.exists(os.path.join(base_model_dir, 'Base' + _tm + '.java')):
+                storage_file(base_model_dir, base_model_content, "Base" + _tm + ".java")
 
             sql_params = {'model': _lm, 'columns': _m['columns'], 'tableName': _m['table']}
             sql_conf_content = self.__code_tpl__('code/sql.xml', sql_params)
@@ -248,6 +301,7 @@ class Application:
         os.mkdir(app_path)
         os.mkdir(os.path.join(app_path, 'controllers'))
         os.mkdir(os.path.join(app_path, 'models'))
+        os.mkdir(os.path.join(app_path, 'models', 'base'))
         os.mkdir(os.path.join(app_path, 'jobs'))
         os.mkdir(os.path.join(app_path, 'interceptors'))
         os.mkdir(os.path.join(app_path, 'validators'))

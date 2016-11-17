@@ -7,8 +7,8 @@
 
 <portable-config>
     <config-file path="WEB-INF/classes/application.conf" type=".properties">
-        <replace key="dev.mode">false</replace>
-        <replace key="domain">http://127.0.0.1/{{group}}</replace>
+        <replace key="app.mode">false</replace>
+        <replace key="app.domain">http://127.0.0.1/{{group}}</replace>
         <replace key="db.url">jdbc:mysql://127.0.0.1:3306/{{group}}?useUnicode=true&amp;characterEncoding=utf-8</replace>
     </config-file>
 </portable-config>
