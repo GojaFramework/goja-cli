@@ -17,13 +17,6 @@ class Application:
         Goja Framework Application
     """
 
-    app_dirs = ['src',
-                ['main', ['java', 'app', ['controllers', 'models', 'jobs', 'interceptors', 'validators', 'dtos']],
-                 ['resources', 'sqlcnf'],
-                 ['webapp', ['static', ['WEB-INF', 'views']]]],
-                ['test', ['java', 'app'], ['resources']]]
-    misc_dirs = ['misc', ['docs', 'scripts', 'portable']]
-
     def __init__(self, cmd_path, goja_home, application_name):
         """
         初始化对象
@@ -39,16 +32,16 @@ class Application:
             self.app_dir = os.path.join(self.cmd_path, self.application_name)
         else:
             self.app_dir = self.cmd_path
-        # if not os.path.exists(self.app_dir):
-        #     print '应用目录 ' + self.app_dir + ' 不存在,无法执行命令'
-        #     sys.exit(1)
+            # if not os.path.exists(self.app_dir):
+            #     print '应用目录 ' + self.app_dir + ' 不存在,无法执行命令'
+            #     sys.exit(1)
 
     def layout(self):
         self.mk_java_dir()
         self.mk_misc_dir()
 
     def sync_lib(self):
-        storage_path = os.path.join(self.app_dir, 'src', 'main' , 'webapp', 'WEB-INF', 'lib')
+        storage_path = os.path.join(self.app_dir, 'src', 'main', 'webapp', 'WEB-INF', 'lib')
         copy_directory(os.path.join(self.goja_home, 'resources', 'libs'), storage_path)
 
         storage_path = os.path.join(self.app_dir, 'src', 'test', 'lib')
@@ -71,12 +64,12 @@ class Application:
 
         params = {'appName': self.application_name}
 
-        file_content = self.__code_tpl__('code/IndexController.java', params)
+        file_content = self.__code_tpl__('code/IndexController.jinja2', params)
         storage_file(storage_path, file_content, 'IndexController.java')
 
         storage_path = os.path.join(self.app_dir, "src", "main", "webapp", "WEB-INF", "views")
 
-        file_content = self.__code_tpl__('code/index.ftl', params)
+        file_content = self.__code_tpl__('code/index.jinja2', params)
         storage_file(storage_path, file_content, 'index.ftl')
 
     def pom(self):
@@ -88,7 +81,7 @@ class Application:
         prod_xml = open(os.path.join(self.goja_home, 'resources', 'protable', 'prod.xml'), 'r')
         storage_file(os.path.join(self.app_dir, "misc", "portable"), prod_xml.read(), 'prod.xml')
         prod_xml.close()
-        print 'generate maven pom file Success!'
+        print('generate maven pom file Success!')
 
     def pack_war(self):
         import subprocess
@@ -105,7 +98,7 @@ class Application:
         ant_cmds = '%s clean package' % ant_path
         compile_process = subprocess.Popen(ant_cmds, shell=True, stdout=subprocess.PIPE)
         while compile_process.poll() is None:
-            print compile_process.stdout.readline()
+            print(compile_process.stdout.readline())
         # 3. clean build file.
         os.remove(build_xml_file)
 
@@ -124,7 +117,7 @@ class Application:
         """
         conf = read_conf(self.app_dir)
         if 'db.url' not in conf:
-            print 'The Application not enable database or not mysql database.'
+            print('The Application not enable database or not mysql database.')
             sys.exit()
         # 读取生成规则
         generate_model = 'app.models'
@@ -177,14 +170,14 @@ class Application:
                     column_list.append(column[0])
                     field_var = underline_to_camel(column[0])
                     column_models.append({
-                        'name': column[0], 
+                        'name': column[0],
                         'fieldName': upper_first(field_var),
-                        'fieldvar': field_var, 
+                        'fieldvar': field_var,
                         'data_type': column[1]
                     })
-
+                model_file = underline_to_camel(table_name).replace('tmp', '')
                 models.append({
-                    'model': underline_to_camel(table_name).replace('tmp', ''),
+                    'model': model_file,
                     'table': real_table_name,
                     'columns': ','.join(column_list),
                     'column_models': column_models
@@ -194,49 +187,51 @@ class Application:
         except:
             import traceback
             traceback.print_exc()
-            print "error unkown tables;"
+            print("error unkown tables;")
         finally:
             db.close()
 
-        src_java_dir = os.path.join(self.app_dir, 'src','main', 'java');
+        src_java_dir = os.path.join(self.app_dir, 'src', 'main', 'java')
         model_dir = os.path.join(src_java_dir, *model_path)
         base_model_dir = os.path.join(src_java_dir, *base_model_path)
         # 打印目录
-        print 'generate db model in [%s]' % base_model_dir
-        print 'generate db base model in [%s]' % model_dir
+        print('generate db model in [%s]' % base_model_dir)
+        print('generate db base model in [%s]' % model_dir)
         scd = os.path.join(self.app_dir, 'src', 'main', 'resources', 'sqlconf')
         sys_user = getpass.getuser()
 
         for _m in models:
             _tm = _m['model']
             _lm = _tm.lower()
+
+            _table_name = _m['table']
             params = {
-                'tableName': _m['table'], 
-                'model': _tm, 
-                'lower_model': _lm, 
+                'tableName': _table_name,
+                'model': _tm,
+                'lower_model': _lm,
                 'sysUser': sys_user,
                 'pkg': generate_base_model
             }
-            file_content = self.__code_tpl__('code/model.java', params)
+            file_content = self.__code_tpl__('code/model.jinja2', params)
             if not os.path.exists(os.path.join(model_dir, _tm + '.java')):
                 storage_file(model_dir, file_content, _tm + ".java")
 
             base_model_params = {
-                'tableName': _m['table'], 
-                'model': _tm, 
-                'sysUser': sys_user, 
-                'columns': _m['column_models'], 
+                'tableName': _table_name,
+                'model': _tm,
+                'sysUser': sys_user,
+                'columns': _m['column_models'],
                 'pkg': generate_base_model
             }
-            base_model_content = self.__code_tpl__('code/basemodel.java', base_model_params)
+            base_model_content = self.__code_tpl__('code/basemodel.jinja2', base_model_params)
             if not os.path.exists(os.path.join(base_model_dir, 'Base' + _tm + '.java')):
                 storage_file(base_model_dir, base_model_content, "Base" + _tm + ".java")
 
-            sql_params = {'model': _lm, 'columns': _m['columns'], 'tableName': _m['table']}
-            sql_conf_content = self.__code_tpl__('code/sql.xml', sql_params)
+            sql_params = {'model': _lm, 'columns': _m['columns'], 'tableName': _table_name}
+            sql_conf_content = self.__code_tpl__('code/sql.jinja2', sql_params)
             if not os.path.exists(os.path.join(scd, _lm + '-sql.xml')):
                 storage_file(scd, sql_conf_content, _lm + '-sql.xml')
-        print 'sync db to model Success!'
+        print('sync db to model Success!')
 
     def idea(self):
         """
@@ -253,7 +248,7 @@ class Application:
         storage_file(self.app_dir, file_content, idea_iml)
         file_content = self.__code_tpl__('idea/iprTemplate.xml', params)
         storage_file(self.app_dir, file_content, idea_ipr)
-        print 'Convert the Intellij idea project Success.'
+        print('Convert the Intellij idea project Success.')
 
     def __code_tpl__(self, tpl_file, params):
         env = Environment(
@@ -290,7 +285,7 @@ class Application:
         """
         _src = os.path.join(self.cmd_path, self.application_name, 'src')
         if os.path.exists(_src):
-            print 'the %s is exist!' % os.path.join(self.cmd_path, self.application_name)
+            print('the %s is exist!' % os.path.join(self.cmd_path, self.application_name))
             sys.exit(1)
         os.makedirs(_src)
         main_ = os.path.join(_src, 'main')
